@@ -45,4 +45,4 @@ class UserRegistrationViewset(ModelViewSet):
         return Response({
             'success': True,
             'data': sz.RegistrationSerializer(user).data
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
