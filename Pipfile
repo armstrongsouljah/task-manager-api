@@ -11,6 +11,7 @@ djangorestframework = "*"
 psycopg2-binary = "*"
 django-redis = "*"
 pyjwt = "*"
+flake8 = "*"
 
 [dev-packages]
 
