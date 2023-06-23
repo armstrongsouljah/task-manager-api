@@ -23,11 +23,6 @@ repos:
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: |
-          (?x)^(
-                .cm/gitstream.cm|
-                elevate_leave/signals.py
-            )$
 
       - id: file-contents-sorter
       - id: forbid-new-submodules
@@ -42,7 +37,7 @@ repos:
     rev: v1.4.4
     hooks:
       - id: autopep8
-  
+
   - repo: https://github.com/pre-commit/pre-commit
     rev: v2.20.0
     hooks:
