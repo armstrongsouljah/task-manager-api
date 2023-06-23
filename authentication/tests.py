@@ -14,3 +14,21 @@ class RegistrationTest(TestCase):
         }
         response = self.client.post(signup_url, payload)
         self.assertEqual(201, response.status_code)
+
+    def test_signup_with_invalid_email(self):
+        signup_url = '/auth/users/register/'
+        payload = {
+            'email': 'testusergmail.com',
+            'password': 'Password2'
+        }
+        response = self.client.post(signup_url, payload)
+        self.assertEqual(400, response.status_code)
+
+    def test_signup_without_password_fails(self):
+        signup_url = '/auth/users/register/'
+        payload = {
+            'email': 'testuser@gmail.com',
+            'password': ''
+        }
+        response = self.client.post(signup_url, payload)
+        self.assertEqual(400, response.status_code)
