@@ -96,9 +96,8 @@ class LoginViewset(ViewSet):
             "error": serialiser.errors,
             "token":""
         })
-        print(serialiser.data)
+       
         token = serialiser.data.get('token')
-        log.info(serialiser.data)
         return Response({
             "msg": "Successfully logged in",
             "token": token
