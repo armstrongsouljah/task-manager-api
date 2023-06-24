@@ -31,6 +31,8 @@ class TodoItemViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         request_user = self.request.user.userprofile
         search = self.request.query_params.get('search')
+        sort = self.request.query_params.get('sort')
+        sort_key = self.request.query_params.get('sort_key')
 
         queryset =  self.queryset.filter(
             created_by=request_user).select_related(
@@ -39,6 +41,12 @@ class TodoItemViewset(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 Q(name__icontains=search)|
                 Q(todo_list__title__icontains=search))
+            
+        if (sort and sort.lower() == 'desc') and sort_key:
+            queryset = queryset.order_by(f'-{sort_key}')
+
+        if (sort and sort.lower() == 'asc') and sort_key:
+            queryset = queryset.order_by(f'{sort_key}')
         
         return queryset
     
@@ -173,12 +181,20 @@ class TodoListViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         request_user = self.request.user.userprofile
         search = self.request.query_params.get('search')
+        sort = self.request.query_params.get('sort')
+        sort_key = self.request.query_params.get('sort_key')
         queryset = self.queryset.filter(
             is_active=True, owner=request_user)
         if search:
             queryset = queryset.filter(
                 Q(title__icontains=search)|
                 Q(todos__name__icontains=search))
+            
+        if (sort and sort.lower() == 'desc') and sort_key:
+            queryset = queryset.order_by(f'-{sort_key}')
+
+        if (sort and sort.lower() == 'asc') and sort_key:
+            queryset = queryset.order_by(f'{sort_key}')
         
         return queryset
     
