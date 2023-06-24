@@ -116,7 +116,7 @@ class TodoItemViewset(viewsets.ModelViewSet):
             print(e)
             return  Response({
             'success': False,
-            'msg': 'Error saving todo list',
+            'msg': 'Error saving todo item',
             'data': {},
         }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -125,6 +125,26 @@ class TodoItemViewset(viewsets.ModelViewSet):
             'msg': 'Added new item to list',
             'data': sz.TodoListSerializer(todo_list).data,
         }, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, url_path="delete-item", methods=["DELETE"])
+    def delete_todo_item(self, request):
+        request_user = request.user.userprofile
+        item_id = request.query_params.get("pk")
+        list_id = request.query_params.get("todo_list")
+
+        todo_item = get_object_or_404(TodoItem, pk=item_id, created_by=request_user,todo_list__pk=list_id )
+        try:
+            TodoItem.objects.filter(pk=todo_item.pk).delete()
+        except Exception as e:
+            return Response({
+                'success': False,
+                'msg': 'Error deleting todo item'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'success': True,
+            'msg': 'Todo item deleted'
+        }, status=status.HTTP_204_NO_CONTENT)
 
 class TodoListViewset(viewsets.ModelViewSet):
     """ Class to handle all requests for todo items """
@@ -231,3 +251,24 @@ class TodoListViewset(viewsets.ModelViewSet):
             'success': True,
             'msg': 'Todo list updated successfully.',
         }, status=status.HTTP_200_OK)
+    
+
+    @action(detail=False, url_path="delete-list", methods=["DELETE"])
+    def delete_todo_list(self, request):
+        request_user = request.user.userprofile
+        list_id = request.query_params.get("pk")
+
+        todo_list = get_object_or_404(TodoList, pk=list_id, owner=request_user)
+        try:
+            TodoList.objects.filter(pk=todo_list.pk).delete()
+        except Exception as e:
+            return Response({
+                'success': False,
+                'msg': 'Error deleting todo list'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'success': True,
+            'msg': 'Todo list deleted'
+        }, status=status.HTTP_204_NO_CONTENT)
+
