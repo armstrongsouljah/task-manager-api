@@ -13,7 +13,7 @@ class JWTAuthentication(auth.BaseAuthentication):
     def authenticate(self, request):
         auth_header = auth.get_authorization_header(request)
         prefix, token = None, None
-        user = None
+        
         if auth_header:
             auth_header = auth.get_authorization_header(request).split()
             prefix = auth_header[0].decode('utf-8')

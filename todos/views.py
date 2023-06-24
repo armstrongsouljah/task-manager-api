@@ -143,7 +143,7 @@ class TodoItemViewset(viewsets.ModelViewSet):
         return Response({
             'success': True,
             'msg': 'Added new item to list',
-            'data': sz.TodoListSerializer(todo_list).data,
+            'data': sz.TodoItemSerializer(todo_item).data,
         }, status=status.HTTP_201_CREATED)
     
     @action(detail=False, url_path="delete-item", methods=["DELETE"])
@@ -167,7 +167,7 @@ class TodoItemViewset(viewsets.ModelViewSet):
         }, status=status.HTTP_204_NO_CONTENT)
 
 class TodoListViewset(viewsets.ModelViewSet):
-    """ Class to handle all requests for todo items """
+    """ Class to handle all requests for todo lists """
     queryset = TodoList.objects.all()
     serializer_class = sz.TodoListSerializer
     pagination_class = CustomPagination
@@ -201,7 +201,6 @@ class TodoListViewset(viewsets.ModelViewSet):
     @action(detail=False, url_path="new-list", methods=["POST"])
     def create_new_list(self, request):
         payload = request.data
-        # owner_id = payload.get("owner")
         request_user = self.request.user.userprofile
 
         serializer = self.serializer_class(data=payload)
@@ -221,6 +220,8 @@ class TodoListViewset(viewsets.ModelViewSet):
                 payload['is_active'] = bool(is_active)
             payload['owner'] = request_user
             todo_list, _ = TodoList.objects.get_or_create(**payload)
+            todo_list = TodoList.objects.latest('created_at')
+
         except Exception as e:
             print(e)
             return  Response({
@@ -232,7 +233,7 @@ class TodoListViewset(viewsets.ModelViewSet):
         return Response({
             'success': True,
             'msg': 'Created new todo list',
-            'data': sz.TodoListSerializer(todo_list).data,
+            'data': sz.TodoListDisplaySerializer(instance=todo_list).data,
         }, status=status.HTTP_201_CREATED)
     
 
@@ -263,11 +264,13 @@ class TodoListViewset(viewsets.ModelViewSet):
             is_completed = payload.get('is_completed')
 
             if is_completed:
-                todo_list.is_completed = is_completed
+                is_completed = bool(is_completed)
+                todo_list.is_completed = bool(is_completed)
                 items = todo_list.todos.all()
                 for item in items:
                     item.is_completed = is_completed
                 TodoItem.objects.bulk_update(items, fields=['is_completed'])
+                todo_list.save(update_fields=['is_completed'])
 
             if is_active:
                 todo_list.is_active = bool(is_active)

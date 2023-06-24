@@ -42,7 +42,6 @@ class LoginSerializer(sz.Serializer):
     def validate(self, data):
         email = data.get("email", None)
         password = data.get("password", None)
-        print(email, password)
 
         # email validation
         pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
@@ -54,12 +53,9 @@ class LoginSerializer(sz.Serializer):
         if not password:
             raise sz.ValidationError("Password required.")
         
-        user = authenticate(username=email, password=password)
-        print('user.......',user)
+        # issue token
+        user = authenticate(email=email, password=password)
 
-        if not user:
-            raise sz.ValidationError("Invalid username or password.")
-    
         return {
             'email': user.email,
             'token': user.token

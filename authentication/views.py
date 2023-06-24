@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -23,22 +24,52 @@ class UserRegistrationViewset(ModelViewSet):
     queryset = User.objects.all()
     permission_classes = (p.AllowAny,)
     serializer_class  = sz.RegistrationSerializer
-    
-    def create(self, request):
+
+    @action(detail=False, url_path="new", methods=["POST"])
+    def register_user(self, request):
         payload = request.data
-       
         serializer = self.serializer_class(data=payload)
         if not serializer.is_valid():
+
             return Response({
-            'success': False,
-            'data': None,
-            'error': serializer.errors
+            'success': True,
+            'msg': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            email = serializer.data.get('email')
-            password = serializer.data.get('password')
-            user = User.objects.create_user(email=email, password=password)
+           email = payload.get('email')
+           password = payload.get('password')
+           user = User.objects.create_user(email=email, password=password)
+
+        except Exception as e:
+
+            return Response({
+            'success': True,
+            'msg': f'Could not register new user, {e}'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            'success': True,
+            'msg': 'Successfully registered a new user',
+            'token': user.token
+        }, status=status.HTTP_201_CREATED)
+    
+    # def create(self, request):
+    #     payload = request.data
+    #     # print(payload)
+       
+    #     serializer = self.serializer_class(data=payload)
+    #     if not serializer.is_valid():
+    #         return Response({
+    #         'success': False,
+    #         'data': None,
+    #         'error': serializer.errors
+    #     }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     try:
+            # email = payload.get('email')
+            # password = payload.get('password')
+            # user = User.objects.get_or_create(email=email, password=password)
 
             # send activation email.
             # email_details = generate_verification_url(user, request)
@@ -49,18 +80,20 @@ class UserRegistrationViewset(ModelViewSet):
 
             # if not email_sent:
             #     log.info("Email sending failed.....")
+        #     print('.....signup....')
             
-        except Exception as e:
-            return Response({
-            'success': False,
-            'data': None,
-            'msg': f"Error creating a new user. {e}"
-        }, status=status.HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     return Response({
+        #     'success': False,
+        #     'data': None,
+        #     'msg': f"Error creating a new user. {e}"
+        # }, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            'success': True,
-            'data': sz.RegistrationSerializer(user).data
-        }, status=status.HTTP_201_CREATED)
+        # return Response({
+        #     'success': True,
+        #     # 'data': sz.RegistrationSerializer(user).data,
+        #     'data': {}
+        # }, status=status.HTTP_201_CREATED)
     
 
 class EmailVerificationViewset(GenericAPIView):
