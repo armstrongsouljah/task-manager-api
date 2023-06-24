@@ -1,0 +1,75 @@
+version: '2.1'
+orbs:
+  python: circleci/python@2.0.3
+default: &default
+  docker:
+    - image: cimg/python:3.11
+      environment:
+        PIPENV_VENV_IN_PROJECT: true
+        DATABASE_URL: postgresql://root@localhost:5432/circle_test?sslmode=disable
+        DATABASE_TEST_URL: postgresql://root@localhost:5432/circle_test?sslmode=disable
+        CODECOV_TOKEN: $CODECOV_TOKEN
+    - image: cimg/postgres:11.13
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_DB: circle_test
+        POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    - image: cimg/redis:6.2.6
+jobs:
+  build:
+    <<: *default
+    steps:
+      - checkout
+      - python/install-packages:
+          args: '--dev'
+          pkg-manager: pipenv
+          include-branch-in-cache-key: false
+      - run:
+          name: run flake8
+          command: pipenv run flake8 .
+      # - run:
+      #     name: run black formatter on project
+      #     command: pipenv run black -l 99 --check -S --extend-exclude="migrations|.venv" .
+      - run:
+          name: isort - imports sorting
+          command: pipenv run isort -rc --check-only --atomic -q --skip .venv --skip migrations .
+      - run:
+          name: check sh files
+          command: |
+            sudo apt-get install shellcheck
+            for file in $(find . -type f -name "*.sh" ! -path "./node_modules/*" ! -path "./.venv/*"); do shellcheck --format=gcc $file; done;
+      - attach_workspace:
+          at: ~/project/tmp
+      - run:
+          name: run tests
+          no_output_timeout: 30m
+          command: |
+            mkdir test-results
+            pipenv run coverage run --source='.' -m pytest --durations=0
+      - store_test_results:
+          path: test-results
+
+      - run:
+          name: get test coverage
+          command: pipenv run coverage xml -o ./tmp/coverage.xml
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - coverage.xml
+      - attach_workspace:
+          at: ~/project/tmp
+      - run:
+          name: diff cover
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ];
+            then
+              pipenv run diff-cover --compare-branch $(git rev-parse @~) tmp/coverage.xml
+            else
+              pipenv run diff-cover tmp/coverage.xml
+            fi
+    parallelism: 4
+
+workflows:
+  build_test:
+    jobs:
+      - build
