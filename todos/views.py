@@ -8,6 +8,7 @@ from .models import TodoItem, TodoList
 from . import serializers as sz
 from common.utils import CustomPagination
 from authentication.models import UserProfile
+from django.db.models import Q
 
 import logging
 
@@ -28,7 +29,18 @@ class TodoItemViewset(viewsets.ModelViewSet):
         return sz.TodoItemDisplaySerializer
 
     def get_queryset(self):
-        return super().get_queryset()
+        request_user = self.request.user.userprofile
+        search = self.request.query_params.get('search')
+
+        queryset =  self.queryset.filter(
+            created_by=request_user).select_related(
+            'created_by', 'created_by__user', 'todo_list')
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)|
+                Q(todo_list__title__icontains=search))
+        
+        return queryset
     
     @action(detail=False, url_path='complete', methods=['PATCH'])
     def mark_todo_completed(self, request):
@@ -160,8 +172,15 @@ class TodoListViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         request_user = self.request.user.userprofile
-        return self.queryset.filter(
+        search = self.request.query_params.get('search')
+        queryset = self.queryset.filter(
             is_active=True, owner=request_user)
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search)|
+                Q(todos__name__icontains=search))
+        
+        return queryset
     
     @action(detail=False, url_path="new-list", methods=["POST"])
     def create_new_list(self, request):
