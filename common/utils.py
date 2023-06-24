@@ -10,6 +10,8 @@ import six
 from decouple import config
 import logging 
 from celery.utils.log import get_task_logger
+from rest_framework.pagination import PageNumberPagination
+
 log = logging.getLogger(__name__)
 logger = get_task_logger(__name__)
 
@@ -80,3 +82,16 @@ class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
 
 
 email_verification_token = EmailVerificationTokenGenerator()
+
+
+
+
+class CustomPagination(PageNumberPagination):
+    """
+    Class to configure pagination parameters
+    """
+
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 15
+    page_query_param = 'page'

@@ -36,19 +36,19 @@ class UserRegistrationViewset(ModelViewSet):
         }, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            email = payload.get('email')
-            password = payload.get('password')
-            user, _ = User.objects.get_or_create(email=email, password=password)
+            email = serializer.data.get('email')
+            password = serializer.data.get('password')
+            user = User.objects.create_user(email=email, password=password)
 
             # send activation email.
-            email_details = generate_verification_url(user, request)
-            url = email_details.get('url')
-            username = email_details.get('username')
-            email = email_details.get('email')
-            email_sent = send_activation_email.delay(url=url, username=username, email=email)
+            # email_details = generate_verification_url(user, request)
+            # url = email_details.get('url')
+            # username = email_details.get('username')
+            # email = email_details.get('email')
+            # email_sent = send_activation_email.delay(url=url, username=username, email=email)
 
-            if not email_sent:
-                log.info("Email sending failed.....")
+            # if not email_sent:
+            #     log.info("Email sending failed.....")
             
         except Exception as e:
             return Response({
@@ -79,4 +79,27 @@ class EmailVerificationViewset(GenericAPIView):
             user.save()
         return Response({
             'msg': "Email successfully verified"
+        }, status=status.HTTP_200_OK)
+    
+class LoginViewset(ViewSet):
+    permission_classes = (p.AllowAny,)
+    serializer_class = sz.LoginSerializer
+
+    @action(methods=["POST"],url_path="user", detail=False)
+    def perform_login(self,request):
+        payload = request.data
+        serialiser = self.serializer_class(data=payload)
+        # print(serialiser.data)
+        if not serialiser.is_valid():
+            return Response({
+            "success": False,
+            "error": serialiser.errors,
+            "token":""
+        })
+        print(serialiser.data)
+        token = serialiser.data.get('token')
+        log.info(serialiser.data)
+        return Response({
+            "msg": "Successfully logged in",
+            "token": token
         }, status=status.HTTP_200_OK)

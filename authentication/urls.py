@@ -6,6 +6,7 @@ router = DefaultRouter()
 
 router.register('register', auth_views.UserRegistrationViewset, basename='register')
 # router.register('verify', auth_views.EmailVerificationViewset, basename='verify')
+router.register("login", auth_views.LoginViewset, basename="login")
 
 
 app_name = 'authentication'
