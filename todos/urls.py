@@ -4,7 +4,7 @@ from django.urls import path
 
 router = DefaultRouter()
 
-router.register('items/all', td.TodoItemViewset, basename='todos')
+router.register('items', td.TodoItemViewset, basename='todos')
 router.register('lists', td.TodoListViewset, basename='todolist')
 
 
