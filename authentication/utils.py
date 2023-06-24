@@ -1,5 +1,5 @@
 from django.contrib.auth import tokens as tk
-from django.utils import six
+import six
 
 
 class EmailVerificationTokenGenerator(tk.PasswordResetTokenGenerator):

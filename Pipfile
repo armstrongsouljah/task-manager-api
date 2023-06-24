@@ -9,9 +9,12 @@ dj-database-url = "*"
 python-decouple = "*"
 djangorestframework = "*"
 psycopg2-binary = "*"
-django-redis = "*"
 pyjwt = "*"
 flake8 = "*"
+django-redis = "*"
+celery = "*"
+redis = "*"
+sendgrid-django = "*"
 
 [dev-packages]
 

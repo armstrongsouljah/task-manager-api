@@ -1,11 +1,16 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from rest_framework import permissions as p
 from . import serializers as sz
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from common.utils import send_activation_email, email_verification_token, generate_verification_url
+from datetime import datetime
 import logging
 
 log = logging.getLogger(__name__)
@@ -34,7 +39,17 @@ class UserRegistrationViewset(ModelViewSet):
             email = payload.get('email')
             password = payload.get('password')
             user, _ = User.objects.get_or_create(email=email, password=password)
-         
+
+            # send activation email.
+            email_details = generate_verification_url(user, request)
+            url = email_details.get('url')
+            username = email_details.get('username')
+            email = email_details.get('email')
+            email_sent = send_activation_email.delay(url=url, username=username, email=email)
+
+            if not email_sent:
+                log.info("Email sending failed.....")
+            
         except Exception as e:
             return Response({
             'success': False,
@@ -46,3 +61,22 @@ class UserRegistrationViewset(ModelViewSet):
             'success': True,
             'data': sz.RegistrationSerializer(user).data
         }, status=status.HTTP_201_CREATED)
+    
+
+class EmailVerificationViewset(GenericAPIView):
+    def get(self, request, uuid, token):
+        try:
+            user_id = force_bytes(urlsafe_base64_decode(uuid)).decode('utf-8')
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({
+            'msg': "Error verifying email"
+        }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user is not None and email_verification_token.check_token(user, token):
+            user.email_verified = True
+            user.email_verification_date = datetime.utcnow()
+            user.save()
+        return Response({
+            'msg': "Email successfully verified"
+        }, status=status.HTTP_200_OK)
