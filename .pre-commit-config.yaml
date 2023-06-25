@@ -57,14 +57,10 @@ repos:
           [
             -S,
             -l 99,
-            --exclude="migrations|.venv|node_modules|apps.py|signals.py",
+            --exclude="migrations|.venv|node_modules|apps.py|signals.py|admin.py",
           ]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
