@@ -16,6 +16,8 @@ celery = "*"
 redis = "*"
 sendgrid-django = "*"
 isort = "*"
+coverage = "*"
+pytest = "*"
 
 [dev-packages]
 
