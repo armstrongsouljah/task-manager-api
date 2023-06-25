@@ -15,6 +15,7 @@ django-redis = "*"
 celery = "*"
 redis = "*"
 sendgrid-django = "*"
+isort = "*"
 
 [dev-packages]
 
