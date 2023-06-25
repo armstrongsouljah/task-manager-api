@@ -40,6 +40,15 @@ class UserRegistrationViewset(ModelViewSet):
            email = payload.get('email')
            password = payload.get('password')
            user = User.objects.create_user(email=email, password=password)
+           
+           email_details = generate_verification_url(user, request)
+           url = email_details.get('url')
+           username = email_details.get('username')
+           email = email_details.get('email')
+           email_sent = send_activation_email.delay(url=url, username=username, email=email)
+
+           if not email_sent:
+               log.info("Email sending failed.....")
 
         except Exception as e:
 
@@ -53,47 +62,6 @@ class UserRegistrationViewset(ModelViewSet):
             'msg': 'Successfully registered a new user',
             'token': user.token
         }, status=status.HTTP_201_CREATED)
-    
-    # def create(self, request):
-    #     payload = request.data
-    #     # print(payload)
-       
-    #     serializer = self.serializer_class(data=payload)
-    #     if not serializer.is_valid():
-    #         return Response({
-    #         'success': False,
-    #         'data': None,
-    #         'error': serializer.errors
-    #     }, status=status.HTTP_400_BAD_REQUEST)
-        
-    #     try:
-            # email = payload.get('email')
-            # password = payload.get('password')
-            # user = User.objects.get_or_create(email=email, password=password)
-
-            # send activation email.
-            # email_details = generate_verification_url(user, request)
-            # url = email_details.get('url')
-            # username = email_details.get('username')
-            # email = email_details.get('email')
-            # email_sent = send_activation_email.delay(url=url, username=username, email=email)
-
-            # if not email_sent:
-            #     log.info("Email sending failed.....")
-        #     print('.....signup....')
-            
-        # except Exception as e:
-        #     return Response({
-        #     'success': False,
-        #     'data': None,
-        #     'msg': f"Error creating a new user. {e}"
-        # }, status=status.HTTP_400_BAD_REQUEST)
-
-        # return Response({
-        #     'success': True,
-        #     # 'data': sz.RegistrationSerializer(user).data,
-        #     'data': {}
-        # }, status=status.HTTP_201_CREATED)
     
 
 class EmailVerificationViewset(GenericAPIView):
