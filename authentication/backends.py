@@ -45,9 +45,9 @@ class JWTAuthentication(auth.BaseAuthentication):
             msg = "No user matching this token"
             raise ex.AuthenticationFailed(msg)
             
-        # token_data = payload['user_data'].split()
-        if not user.is_active:
-            msg = "User has been deactivated"
+        # ensure only valid emails access the platform
+        if not user.is_active and not user.email_verified:
+            msg = "Account not activate or account has been deactivated"
             raise ex.AuthenticationFailed(msg)
 
         return (user, token)
