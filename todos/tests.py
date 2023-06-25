@@ -1,7 +1,9 @@
 from django.test import TestCase
-from .models import TodoList, TodoItem
+
+# from .models import TodoItem, TodoList
 
 # Create your tests here.
+
+
 class TodosTestCase(TestCase):
-    
     ...

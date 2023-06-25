@@ -1,10 +1,13 @@
 from rest_framework import serializers
-from .models import TodoList, TodoItem
-from authentication.serializers import UserProfileDisplaySerializer
+
+from .models import TodoItem, TodoList
+
+# from authentication.serializers import UserProfileDisplaySerializer
+
 
 class TodoItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model  = TodoItem
+        model = TodoItem
         fields = '__all__'
 
     def validate(self, data):
@@ -12,9 +15,9 @@ class TodoItemSerializer(serializers.ModelSerializer):
         todo_list = data.get('todo_list')
         created_by = data.get('created_by')
         name = data.get('name')
-        if todo_list_owner !=created_by:
+        if todo_list_owner != created_by:
             raise serializers.ValidationError("Please select your own list")
-        
+
         name_exists = todo_list.todos.filter(name__iexact=name).exists()
         if name_exists:
             raise serializers.ValidationError("Item already added to list.")
@@ -29,7 +32,7 @@ class TodoListSerializer(serializers.Serializer):
     def validate(self, data):
         title = data.get('title')
         print('title....', title)
-       
+
         name_exists = TodoList.objects.filter(title__iexact=title).exists()
         if name_exists:
             raise serializers.ValidationError("A list with the same title exists.")
@@ -40,9 +43,13 @@ class TodoItemDisplaySerializer(serializers.ModelSerializer):
     class Meta:
         model = TodoItem
         fields = [
-            'pk','name', 'is_active','is_completed',
-            ]
-    
+            'pk',
+            'name',
+            'is_active',
+            'is_completed',
+        ]
+
+
 class TodoListDisplaySerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     title = serializers.CharField()
@@ -51,10 +58,6 @@ class TodoListDisplaySerializer(serializers.Serializer):
     is_active = serializers.BooleanField()
     short_code = serializers.CharField()
     todos = TodoItemDisplaySerializer(many=True, read_only=True)
-    
-    
+
     class Meta:
-        fields = [
-             
-             'pk','title', 'todos', 'owner', 'is_completed', 'is_active', 'short_code'
-             ]                                                                                                                                                                                                                                                                                                                                                                                                           
+        fields = ['pk', 'title', 'todos', 'owner', 'is_completed', 'is_active', 'short_code']

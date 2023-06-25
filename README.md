@@ -22,7 +22,7 @@ To run the API, you'll need the following installed on your machine:
    git clone https://github.com/your-username/todo-list-api.git
    ```
 
-## Project setup 
+## Project setup
 1. Navigate to the project directory:
    ```
    cd todo-list-api
@@ -145,6 +145,6 @@ Authorization: Bearer token obtained during authentication.
 **Response:
 
 
-### Check out the API 
+### Check out the API
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/5140285-0cd4883f-4de8-4d6f-bbaf-f17268854a16?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D5140285-0cd4883f-4de8-4d6f-bbaf-f17268854a16%26entityType%3Dcollection%26workspaceId%3D7d07eb9f-ea3b-4c80-8843-fd704d8fb744)

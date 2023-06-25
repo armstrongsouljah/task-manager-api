@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,7 +15,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TodoList',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                    ),
+                ),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_recurring', models.BooleanField(default=False)),
                 ('title', models.CharField(max_length=120)),
@@ -24,20 +28,46 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_completed', models.BooleanField(default=True)),
                 ('short_code', models.CharField(blank=True, null=True)),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='my_todo_list', to='authentication.userprofile')),
+                (
+                    'owner',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='my_todo_list',
+                        to='authentication.userprofile',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='TodoItem',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
+                    ),
+                ),
                 ('name', models.CharField(max_length=120)),
                 ('is_completed', models.BooleanField(default=False)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='author', to='authentication.userprofile')),
-                ('todo_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='todos', to='todos.todolist')),
+                (
+                    'created_by',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='author',
+                        to='authentication.userprofile',
+                    ),
+                ),
+                (
+                    'todo_list',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='todos',
+                        to='todos.todolist',
+                    ),
+                ),
             ],
         ),
     ]
