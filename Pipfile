@@ -19,6 +19,7 @@ coverage = "*"
 pytest = "*"
 pytest-django = "*"
 django = "==3.2"
+diff-cover = "*"
 
 [dev-packages]
 
