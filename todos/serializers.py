@@ -19,6 +19,8 @@ class TodoItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Please select your own list")
 
         name_exists = todo_list.todos.filter(name__iexact=name).exists()
+        if name and not isinstance(name, str):
+            raise serializers.ValidationError("Name must be a string")
         if name_exists:
             raise serializers.ValidationError("Item already added to list.")
         return data
@@ -31,10 +33,11 @@ class TodoListSerializer(serializers.Serializer):
 
     def validate(self, data):
         title = data.get('title')
-        print('title....', title)
 
-        name_exists = TodoList.objects.filter(title__iexact=title).exists()
-        if name_exists:
+        title_exists = TodoList.objects.filter(title__iexact=title).exists()
+        if title and not isinstance(title, str):
+            raise serializers.ValidationError("Title must be a string.")
+        if title_exists:
             raise serializers.ValidationError("A list with the same title exists.")
         return data
 

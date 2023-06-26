@@ -98,6 +98,46 @@ class TodoItemViewset(viewsets.ModelViewSet):
 
         return Response({'success': True, 'msg': item_msg})
 
+    @action(detail=False, url_path='update', methods=['PATCH'])
+    def update_todo_item(self, request):
+        payload = request.data
+        params = request.query_params
+        pk = params.get('pk')
+        request_user = request.user.userprofile
+
+        item = get_object_or_404(TodoItem, pk=pk)
+        serializer = sz.TodoItemSerializer(item, data=payload, partial=True)
+
+        if item.created_by != request_user:
+            return Response(
+                {'success': False, 'msg': 'Can only update your item.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            name = payload.get('name')
+            item.name = name
+            item.save(
+                update_fields=[
+                    'name',
+                ]
+            )
+        except Exception as e:
+            log.info(e)
+            if not serializer.is_valid():
+                return Response(
+                    {'success': False, 'msg': "Error updating todo item"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        return Response(
+            {
+                'success': True,
+                'msg': "Todo item updated.",
+                'data': sz.TodoItemDisplaySerializer(item).data,
+            }
+        )
+
     @action(detail=False, url_path="new-item", methods=["POST"])
     def create_new_item(self, request):
         payload = request.data
