@@ -13,6 +13,7 @@ To run the API, you'll need the following installed on your machine:
 - Python 3.11 or higher
 - pipenv
 - postgresql
+- redis
 
 ### Installation
 
@@ -40,20 +41,28 @@ To run the API, you'll need the following installed on your machine:
     SECRET_KEY='secret for the django project'
     DATABASE_URL=The connection URI for your postgres database.
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.sendgrid.net'
-    EMAIL_HOST_USER = 'apikey'
-    EMAIL_HOST_PASSWORD = 'your key'
-    EMAIL_PORT = 465
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'your-email'
+    EMAIL_HOST_PASSWORD = 'your-app-password' `set up an app password for your gmail`
+    EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    DEFAULT_FROM_EMAIL='prefereed email'
+    DEFAULT_FROM_EMAIL='your-email'
     CELERY_BROKER_URL = "redis://localhost:6379"
     CELERY_RESULT_BACKEND = "redis://localhost:6379"
+    ALLOWED_HOSTS=.localhost,localhost
 ```
 4. Start the server
 ```bash
     ./manage.py runserver
 
 The API should now be running on http://localhost:8000/
+```
+
+4.1. Start the celery worker in a separate terminal
+```bash
+     python -m celery -A todolist worker -l info
+
+Celery should now be able to offload heavy tasks.
 ```
 
 5. Stop the server with `Ctrl+C`  and Create a test admin user
@@ -83,7 +92,7 @@ token: An authentication token.
 ```
 ### Login
 ```
-URL: /auth/login/user/
+URL: auth/users/login/user/
 Method: POST
 Request Body:
 email: User's email address.
@@ -108,7 +117,7 @@ list: The created todo list object.
 ```
 ## Get All Todo Lists
 ```
-URL: /lists
+URL: /todos/lists/
 Method: GET
 Request Headers:
 Authorization: Bearer token obtained during authentication.
@@ -116,14 +125,16 @@ Response:
 lists: An array of todo list objects.
 ```
 
-## Get a Todo List
+## Update a Todo List
 ```
-URL: /lists/:id
-Method: GET
+URL: /todos/lists/update/?short_code=shortcode
+Method: PATCH
 Request Headers:
 Authorization: Bearer token obtained during authentication.
 Response:
-list: The requested todo list object.
+msg: Success or failure of updating a tod list.
+
+
 Update a Todo List
 URL: /lists/:id
 Method: PUT
@@ -137,10 +148,72 @@ list: The updated todo list object.
 
 ## Delete a Todo List
 ```
-URL: /lists/:id
+URL: /todos/lists/delete-list/?pk=list_id
 Method: DELETE
 Request Headers:
 Authorization: Bearer token obtained during authentication.
+```
+**Response:
+
+
+## Todo List Items
+```
+Create a Todo List
+URL: /todos/items/new-item/
+Method: POST
+Request Headers:
+Authorization: Bearer token obtained during authentication.
+Request Body:
+name: Name of the tod item.
+todo_list: pk of the list it should belong to
+
+Response:
+object: The created todo item object
+```
+## Get All Todo Items
+```
+URL: /todos/items/
+Method: GET
+Request Headers:
+Authorization: Bearer token obtained during authentication.
+Response:
+lists: An array of todo item objects.
+```
+
+## Mark a todo item complete
+```
+URL: /todos/items/complete/?pk=1
+Method: PATCH
+Request Headers:
+Authorization: Bearer token obtained during authentication.
+RequestBody:
+  is_completed: true or false "to mark on unmark an item"
+Response:
+msg: Success or failure of updating a tod list.
+
+
+Mark Entire Todo list completed
+URL: /todos/lists/update/?short_code=D1IJZ7vA
+Method: PUT
+Request Headers:
+Authorization: Bearer token obtained during authentication.
+Request Body:
+is_completed: Boolean to mark completed
+QueryParams:
+short_code: unique identifier for list.
+Response:
+dict: Success or failure message.
+```
+
+## Delete a Todo Item
+```
+URL: /todos/items/delete-item/?pk=5&todo_list=2
+Method: DELETE
+Request Headers:
+Authorization: Bearer token obtained during authentication.
+QueryParams:
+pk: id of todo item
+todo_list: pk of the list from which you're removing the item.
 ```
 **Response:
 
