@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 dj-database-url = "*"
 python-decouple = "*"
 djangorestframework = "*"
@@ -15,6 +14,12 @@ django-redis = "*"
 celery = "*"
 redis = "*"
 sendgrid-django = "*"
+isort = "*"
+coverage = "*"
+pytest = "*"
+pytest-django = "*"
+django = "==3.2"
+diff-cover = "*"
 
 [dev-packages]
 
