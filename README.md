@@ -15,6 +15,7 @@ To run the API, you'll need the following installed on your machine:
 - postgresql
 - redis
 - celery
+- Postman / Insomnia for testing the api.
 
 ### Installation
 
