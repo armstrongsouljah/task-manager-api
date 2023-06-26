@@ -18,6 +18,7 @@ sendgrid-django = "*"
 isort = "*"
 coverage = "*"
 pytest = "*"
+pytest-django = "*"
 
 [dev-packages]
 
