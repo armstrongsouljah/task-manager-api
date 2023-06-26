@@ -1,6 +1,6 @@
-# Todo List REST API with Authentication
+# Todo List App REST API
 
-This is a README file for a Todo List REST API with authentication. The API allows users to create and manage todo lists, create and update todo items, mark items as completed, delete items from a list, delete the entire list, and edit both items and lists.
+The API allows users to create and manage todo lists, create and update todo items, mark items as completed, delete items from a list, delete the entire list, and edit both items and lists.
 
 ## Getting Started
 
@@ -10,10 +10,12 @@ These instructions will guide you on how to set up and use the Todo List REST AP
 
 To run the API, you'll need the following installed on your machine:
 
-- Python 3.11 or higher
+- Python 3.11
 - pipenv
 - postgresql
 - redis
+- celery
+- Postman / Insomnia for testing the api.
 
 ### Installation
 
