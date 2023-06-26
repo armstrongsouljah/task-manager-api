@@ -14,7 +14,7 @@ class TodoList(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_completed = models.BooleanField(default=False)
-    short_code = models.CharField(blank=True, null=True)
+    short_code = models.CharField(max_length=35, blank=True, null=True)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='my_todo_list')
 
     def __str__(self):

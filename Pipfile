@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 dj-database-url = "*"
 python-decouple = "*"
 djangorestframework = "*"
@@ -19,6 +18,7 @@ isort = "*"
 coverage = "*"
 pytest = "*"
 pytest-django = "*"
+django = "==3.2"
 
 [dev-packages]
 
