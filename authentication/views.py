@@ -54,7 +54,7 @@ class UserRegistrationViewset(ModelViewSet):
 
         except Exception as e:
             return Response(
-                {'success': True, 'msg': f'Could not register new user, {e}'},
+                {'success': False, 'msg': f'Could not register new user, {e}'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

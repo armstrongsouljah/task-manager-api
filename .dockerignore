@@ -1,0 +1,5 @@
+*.md
+.pre-commit-config.yaml
+.pytest_cache
+.circleci
+.venv
