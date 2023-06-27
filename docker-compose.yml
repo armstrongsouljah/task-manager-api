@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    env_file:
+      - .env.docker
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=task_manager_db
+      - POSTGRES_USER=task_manager_user
+      - POSTGRES_PASSWORD=task_manager_password
+      - HOST='db'
+      - DATABASE_URL=postgres//:task_manager_user:task_manager_password@localhost/5432/task_manager_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  worker:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A todolist worker --loglevel=info --concurrency 1 -E
+    volumes:
+      - .:/app
+    depends_on:
+      - django
+      - redis
+
+  redis:
+    restart: unless-stopped
+    image: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

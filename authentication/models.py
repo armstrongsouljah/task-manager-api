@@ -30,6 +30,7 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **kwargs)
         user.set_password(password)
+        user.is_active = True
         user.save()
         return user
 

@@ -16,16 +16,41 @@ To run the API, you'll need the following installed on your machine:
 - redis
 - celery
 - Postman / Insomnia for testing the api.
+- Optionally Docker (requires docker compose and gmake)
+
+- install docker if not available locally
+- create a `.env.docker` file locally and add details using `env_docker_sample.txt`
+- install make `apt update && apt install -y make`
+- clone the repository
+```bash
+   git clone git@github.com:armstrongsouljah/task-manager-api.git
+   ```
+- cd task-manager-api
+- docker compose up
+- open a separate terminal and run the following commands
+```bash
+  make migrate
+  This command runs migrations
+```
+```bash
+   make superuser
+   this creates a superuser that will allow you access the admin interface
+```
+
+- try out the api by heading over to postman by the helpof the provided collection button.
+
 
 ### Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/todo-list-api.git
+   git clone git@github.com:armstrongsouljah/task-manager-api.git
    ```
 
-## Project setup
+## Project setup with docker
+
+## Project setup Manually
 1. Navigate to the project directory:
    ```
    cd todo-list-api
