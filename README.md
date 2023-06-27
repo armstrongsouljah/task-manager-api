@@ -19,6 +19,7 @@ To run the API, you'll need the following installed on your machine:
 - Optionally Docker (requires docker compose and gmake)
 
 - install docker if not available locally
+- create a `.env.docker` file locally and add details using `env_docker_sample.txt`
 - install make `apt update && apt install -y make`
 - clone the repository
 ```bash

@@ -1,0 +1,16 @@
+DEBUG=True
+SECRET_KEY='your secret key'
+DATABASE_URL=postgres://task_manager_user:task_manager_password@db:5432/task_manager_db use this one
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST_USER='your email'
+EMAIL_HOST_PASSWORD='passwword' use app password from gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL='your email'
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+ALLOWED_HOSTS=.localhost,127.0.0.1,localhost,
+
+# GMAIL_PASSWORD="soooyzipwxclsbqb"
